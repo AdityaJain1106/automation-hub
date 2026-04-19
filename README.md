@@ -130,8 +130,8 @@ Open to ideas, feedback, and collaboration!
 
 ## 📌 Connect
 
-- LinkedIn: [https://linkedin.com/in/YOUR_PROFILE  ](https://www.linkedin.com/in/adddijain/)
-- GitHub: [https://github.com/YOUR_USERNAME  ](https://github.com/AdityaJain1106/)
+- LinkedIn: [](https://www.linkedin.com/in/adddijain/)
+- GitHub: [](https://github.com/AdityaJain1106/)
 
 ---
 
