@@ -130,11 +130,11 @@
         "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "1zvF9IIaWlrIL2UfDTJDSwCykz7lOz3wMFRtMnAbQgLI"
+          "value": "REPLACE_WITH_GOOGLE_SHEET_ID"
         },
         "sheetName": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1zvF9IIaWlrIL2UfDTJDSwCykz7lOz3wMFRtMnAbQgLI/edit?gid=0#gid=0",
+          "value": "REPLACE_WITH_GOOGLE_SHEET_URL",
           "mode": "url"
         },
         "columns": {
@@ -309,7 +309,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "Embi4wxpGjHFHjW1",
+          "id": "YOUR GOOGLE_SHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -329,7 +329,7 @@
     },
     {
       "parameters": {
-        "sendTo": "adijain1106@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "={{$json.subject}}",
         "message": "={{$json.html}}",
         "options": {
@@ -347,7 +347,7 @@
       "webhookId": "cb0b989f-069c-406f-9ec2-4e87201e106a",
       "credentials": {
         "gmailOAuth2": {
-          "id": "G2xgawThbXqbdlu0",
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
           "name": "Gmail account"
         }
       }
@@ -366,7 +366,7 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "PPGUEnnHH95OvPO7",
+          "id": "YOUR GOOGLE PALM_API_CREDENTIAL_ID",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -504,7 +504,7 @@
   "versionId": "7b3823bd-19e5-498b-b08c-cb7d1420d563",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "21240b5aa4dac8e6748a953890b753d40d49a2ab5912c01ffe9fb59ebb42d5e3"
+    "instanceId": "REDACTED"
   },
   "id": "WniJBHU3qDjB4PjH",
   "tags": []
