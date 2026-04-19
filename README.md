@@ -1,5 +1,3 @@
-
-```markdown
 # 🚀 Automation Workflows Hub (n8n + AI)
 
 A growing collection of automation workflows built using n8n, AI models, and APIs to solve real-world problems.
@@ -40,11 +38,11 @@ Sources → Fetch → Clean HTML → AI Extraction → Explode Articles
 
 ## 🛠️ Tech Stack
 
-- n8n (Workflow Automation)
-- AI / LLM (for data extraction)
-- JavaScript (data processing & transformation)
-- Google Sheets API
-- Gmail API
+- n8n (Workflow Automation)  
+- AI / LLM (OpenAI / Gemini)  
+- JavaScript (data transformation)  
+- Google Sheets API  
+- Gmail API  
 
 ---
 
@@ -65,13 +63,12 @@ This workflow helps:
 
 ```
 
-/workflows
-└── startup-funding-watchlist.json
-
-/assets
-└── screenshots
-
-README.md
+.
+├── workflows
+│   └── startup-funding-watchlist.json
+├── assets
+│   └── screenshots
+└── README.md
 
 ```
 
@@ -90,14 +87,28 @@ README.md
 
 ---
 
-## 🚧 Future Plans
+## 🧪 Example Output
 
-This repository will continue to grow with more automation workflows, including:
+Each execution generates structured data like:
+
+- Startup Name  
+- Description  
+- Investors  
+- Amount Raised  
+- Founder LinkedIn  
+- Crunchbase Link  
+- Hiring Score (High / Likely / Watchlist)  
+
+Stored in Google Sheets and sent via email.
+
+---
+
+## 🚧 Future Plans
 
 - 🔍 Job tracking from startup career pages  
 - 📢 Real-time alerts (Telegram / Slack)  
 - 📊 Analytics dashboards  
-- 🤖 Advanced AI-powered extraction systems  
+- 🤖 Advanced AI-powered workflows  
 - 🌐 Automations using tools beyond n8n  
 
 ---
@@ -115,19 +126,15 @@ To build systems that:
 
 Open to ideas, feedback, and collaboration!
 
-If you have suggestions for new workflows or improvements, feel free to open an issue or connect.
-
 ---
 
 ## 📌 Connect
 
-- LinkedIn: https://linkedin.com/in/YOUR_PROFILE  
-- GitHub: https://github.com/YOUR_USERNAME  
+- LinkedIn: [https://linkedin.com/in/YOUR_PROFILE  ](https://www.linkedin.com/in/adddijain/)
+- GitHub: [https://github.com/YOUR_USERNAME  ](https://github.com/AdityaJain1106/)
 
 ---
 
-### ⭐ If you found this useful, consider starring the repo!
-```
-👉 “add screenshots + demo section”
+## ⭐ Support
 
-I’ll upgrade this into a **top-tier GitHub repo page** 🔥
+If you found this useful, consider starring the repo!
