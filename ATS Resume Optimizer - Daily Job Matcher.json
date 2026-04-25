@@ -1,0 +1,906 @@
+{
+  "name": "ATS Resume Optimizer - Daily Job Matcher",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "c2ffab65-1b18-4b7b-b6cd-462182f82d9e",
+      "name": "Daily 7 AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "config_linkedin_keywords",
+              "name": "linkedinSearchKeywords",
+              "value": "Software Engineer",
+              "type": "string"
+            },
+            {
+              "id": "config_linkedin_location",
+              "name": "linkedinLocation",
+              "value": "India",
+              "type": "string"
+            },
+            {
+              "id": "config_resume_file_id",
+              "name": "resumeFileId",
+              "value": "1q18eyeHaQOnNoX_1ZcpQqxuWQo21DkMq",
+              "type": "string"
+            },
+            {
+              "id": "config_output_folder_id",
+              "name": "outputFolderId",
+              "value": "1izLfOwFflTkfzYBLHNskkIWCSC7l3HfD",
+              "type": "string"
+            },
+            {
+              "id": "config_recipient_email",
+              "name": "recipientEmail",
+              "value": "your_email@example.com",
+              "type": "string"
+            },
+            {
+              "id": "config_job_limit",
+              "name": "jobLimit",
+              "value": 5,
+              "type": "number"
+            },
+            {
+              "id": "594c5a50-0fc9-4885-ab30-8056389ee641",
+              "name": "apifyActorId",
+              "value": "bebity/linkedin-jobs-scraper",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "92922cef-9900-4e9c-bfec-c766f79ef3a2",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.resumeFileId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "5b56a551-2311-4862-a75b-d1f5560c3d3b",
+      "name": "Get Resume from Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        48
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "QWv0EjZLWxABJwdN",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "build_linkedin_url",
+              "name": "linkedinUrl",
+              "value": "=https://www.linkedin.com/jobs/search/?keywords={{ encodeURIComponent($('Workflow Configuration').item.json.linkedinSearchKeywords) }}&location={{ encodeURIComponent($('Workflow Configuration').item.json.linkedinLocation) }}&f_TPR=r86400&sortBy=DD",
+              "type": "string"
+            },
+            {
+              "id": "build_apify_actor",
+              "name": "apifyActorId",
+              "value": "bebity/linkedin-jobs-scraper",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cf9ea6eb-12db-4a40-a055-242a994bd679",
+      "name": "Build LinkedIn URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.apify.com/v2/acts/bebity~linkedin-jobs-scraper/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "{{APIFY_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "startUrls",
+              "value": "=[{\"url\": \"{{ $('Build LinkedIn URL').item.json.linkedinUrl }}\"}]"
+            },
+            {
+              "name": "maxItems",
+              "value": "=25"
+            },
+            {
+              "name": "proxy",
+              "value": "={{ {\"useApifyProxy\": true} }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5ae59b14-e551-4cfb-949e-dcee22216ad6",
+      "name": "Apify - Fetch Jobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        48
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "JzKg3g5vQIKkOQ9E",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/acts/bebity~linkedin-jobs-scraper/runs/{{ $json.data.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "{{APIFY_API_KEY}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e13e8a8d-325d-482b-b039-c4c1c408c0ad",
+      "name": "Check Apify Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1568,
+        48
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "JzKg3g5vQIKkOQ9E",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "condition_job_complete",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "SUCCEEDED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c597aad9-d8ad-4002-b16a-1ec1fdb3f392",
+      "name": "Is Job Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "d7b5b581-b364-4108-b745-cbcc8bb5b596",
+      "name": "Wait 10 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        112
+      ],
+      "webhookId": "wait-node-webhook-id"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $('Apify - Fetch Jobs').item.json.data.id }}/dataset/items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "{{APIFY_API_KEY}}"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6c723828-c3d9-4374-86d9-c572e412609c",
+      "name": "Fetch Apify Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        -64
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "JzKg3g5vQIKkOQ9E",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst rawJobs = items[0].json;\n\nconst jobArray = Array.isArray(rawJobs) ? rawJobs : [rawJobs];\n\nconst parsed = jobArray.map(job => ({\n  jobId: job.jobId || job.id || '',\n  title: job.title || job.positionName || '',\n  company: job.companyName || job.company || '',\n  location: job.location || '',\n  description: job.description || job.jobDescription || '',\n  applyUrl: job.jobUrl || job.applyUrl || '',\n  postedAt: job.postedAt || job.postedDate || ''\n})).filter(j => j.description && j.description.length > 100);\n\nreturn parsed.map(j => ({ json: j }));"
+      },
+      "id": "954a4e30-8c6d-40df-ba52-387b500fc740",
+      "name": "Parse Apify Job Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $('Workflow Configuration').first().json.jobLimit }}"
+      },
+      "id": "c315b40d-1c79-4edb-98bb-80a12ae68aab",
+      "name": "Limit to 5 Jobs",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        16,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=1. Resume:\n{{ $('Prepare Resume Text').item.json.resumeText }}\n\n2. Job Description:\nJob Title: {{ $json.title }}\nCompany: {{ $json.company }}\nLocation: {{ $json.location }}\nDescription:\n{{ $json.description }}\n\nINSTRUCTIONS:\n- Carefully analyze the job description and extract:\n  - Key skills\n  - Required technologies\n  - Keywords and phrases\n  - Role responsibilities\n  - Tone and expectations\n- Rewrite the resume to:\n  - Match the job description's keywords EXACTLY where relevant\n  - Align experience and projects with the job requirements\n  - Prioritize the most relevant skills and achievements\n  - Maintain a clean, ATS-friendly structure\n\nSTRICT RULES:\n- DO NOT invent any facts, companies, dates, or metrics\n- DO NOT add fake experience or exaggerate\n- Only rephrase, reorder, and optimize existing content\n- Keep all information truthful and grounded in the original resume\n\nWRITING STYLE:\n- Use strong action verbs (e.g., Built, Developed, Optimized, Led)\n- Make bullet points concise and impact-driven\n- Focus on measurable outcomes where already present\n- Keep formatting simple (plain text, no tables, no graphics)\n\nOUTPUT FORMAT:\nReturn ONLY the updated resume text. No preamble, no explanation, no markdown headers outside the resume itself.\n\nGOAL:\nThe final resume should feel like it was written specifically for this job posting, be highly ATS-compatible, and require minimal to no manual editing before submission.",
+        "options": {
+          "systemMessage": "You are an expert ATS resume optimizer and technical recruiter. Your task is to rewrite the provided resume so that it is perfectly tailored for the given job description, maximizing its chances of passing Applicant Tracking Systems (ATS) and impressing recruiters."
+        }
+      },
+      "id": "729e6231-03c6-47f2-bc79-5b59044cd8c8",
+      "name": "ATS Optimizer Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        272,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 4096,
+          "temperature": 0.3
+        }
+      },
+      "id": "016ce77e-94be-4984-aaeb-b850d601b536",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        624
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "X8ZOM1JyKVHu1whT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "merge_resume_job",
+              "name": "optimizedResume",
+              "value": "={{ $('ATS Optimizer Agent').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "merge_job_title",
+              "name": "jobTitle",
+              "value": "={{ $('Limit to 5 Jobs').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "merge_company",
+              "name": "company",
+              "value": "={{ $('Limit to 5 Jobs').item.json.company }}",
+              "type": "string"
+            },
+            {
+              "id": "merge_apply_url",
+              "name": "applyUrl",
+              "value": "={{ $('Limit to 5 Jobs').item.json.applyUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "merge_location",
+              "name": "jobLocation",
+              "value": "={{ $('Limit to 5 Jobs').item.json.location }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f6dad545-1269-4c19-82f3-5c0507baeb6e",
+      "name": "Merge Resume + Job Meta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "doc_title",
+              "name": "docTitle",
+              "value": "=Resume - {{ $json.company }} - {{ $json.jobTitle }} - {{ $now.format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "doc_folder",
+              "name": "folderId",
+              "value": "={{ $('Workflow Configuration').first().json.outputFolderId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "29ed60f5-db51-4d18-9c7c-e63b495f21b2",
+      "name": "Make Doc Metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://docs.googleapis.com/v1/documents",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $json.docTitle }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b62fc1f-23db-48a2-b3e1-43ad81955843",
+      "name": "Create Google Doc",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        448
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "riWjcRtsKjlwOt7q",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{ $json.documentId }}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"insertText\": {\n        \"location\": {\n          \"index\": 1\n        },\n        \"text\": \"{{ $('Merge Resume + Job Meta').item.json.optimizedResume.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "ef1ac14d-baa2-446a-95a1-e6a35910bc67",
+      "name": "Insert Resume Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        448
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "riWjcRtsKjlwOt7q",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Create Google Doc').item.json.documentId }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "id": "526b31c3-8718-4603-b4b2-4e2b9598293b",
+      "name": "Share Resume",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1584,
+        448
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "QWv0EjZLWxABJwdN",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "build_link",
+              "name": "resumeLink",
+              "value": "=https://docs.google.com/document/d/{{ $('Create Google Doc').item.json.documentId }}/edit",
+              "type": "string"
+            },
+            {
+              "id": "build_summary_item",
+              "name": "summaryItem",
+              "value": "=<li><strong>{{ $('Merge Resume + Job Meta').item.json.jobTitle }}</strong> at {{ $('Merge Resume + Job Meta').item.json.company }} ({{ $('Merge Resume + Job Meta').item.json.jobLocation }})<br>📄 <a href='https://docs.google.com/document/d/{{ $('Create Google Doc').item.json.documentId }}/edit'>View Optimized Resume</a> | 🔗 <a href='{{ $('Merge Resume + Job Meta').item.json.applyUrl }}'>Apply Now</a></li>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc884698-d446-44ee-a5cc-30635160a380",
+      "name": "Build Link Item",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1808,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "allJobs",
+        "options": {}
+      },
+      "id": "7714865d-9d95-4c13-a846-ecfba0678824",
+      "name": "Email Summary",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').first().json.recipientEmail }}",
+        "subject": "=🎯 Your Daily ATS-Optimized Resumes - {{ $now.format('MMM dd, yyyy') }}",
+        "message": "=<html>\n<body style=\"font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px;\">\n  <h2 style=\"color: #0a66c2;\">🎯 Your Daily ATS-Optimized Resumes</h2>\n  <p>Hi! Here are today's top job matches with your optimized resumes ready to submit:</p>\n  <p><strong>Date:</strong> {{ $now.format('MMMM dd, yyyy') }}</p>\n  <hr/>\n  <h3>📋 Job Matches & Optimized Resumes:</h3>\n  <ul style=\"line-height: 2;\">\n    {{ $json.allJobs.map(j => j.summaryItem).join('') }}\n  </ul>\n  <hr/>\n  <p style=\"color: #666; font-size: 12px;\">This email was automatically generated by your ATS Resume Optimizer workflow. Each resume has been tailored specifically for its job posting.</p>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "c758e409-2766-4035-ba93-fcfab28e5647",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2256,
+        448
+      ],
+      "webhookId": "b414295d-a46d-4c3d-8032-1d8418558165",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "G2xgawThbXqbdlu0",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "joinPages": true
+        }
+      },
+      "id": "55f9c2df-c0ee-4c1e-bbbe-bbc8eb690ed6",
+      "name": "Extract Resume Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract_resume_text",
+              "name": "resumeText",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5ec9051a-26e3-4e82-9ea5-cffe31b8e2ce",
+      "name": "Prepare Resume Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        48
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily 7 AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Resume from Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Resume from Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Extract Resume Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build LinkedIn URL": {
+      "main": [
+        [
+          {
+            "node": "Apify - Fetch Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apify - Fetch Jobs": {
+      "main": [
+        [
+          {
+            "node": "Check Apify Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Apify Status": {
+      "main": [
+        [
+          {
+            "node": "Is Job Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Job Complete?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Apify Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 10 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Check Apify Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Apify Results": {
+      "main": [
+        [
+          {
+            "node": "Parse Apify Job Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Apify Job Results": {
+      "main": [
+        [
+          {
+            "node": "Limit to 5 Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit to 5 Jobs": {
+      "main": [
+        [
+          {
+            "node": "ATS Optimizer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATS Optimizer Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Resume + Job Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ATS Optimizer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Resume + Job Meta": {
+      "main": [
+        [
+          {
+            "node": "Make Doc Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make Doc Metadata": {
+      "main": [
+        [
+          {
+            "node": "Create Google Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Insert Resume Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Resume Text": {
+      "main": [
+        [
+          {
+            "node": "Share Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share Resume": {
+      "main": [
+        [
+          {
+            "node": "Build Link Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Link Item": {
+      "main": [
+        [
+          {
+            "node": "Email Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Summary": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Resume Text": {
+      "main": [
+        [
+          {
+            "node": "Prepare Resume Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Resume Text": {
+      "main": [
+        [
+          {
+            "node": "Build LinkedIn URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "33972adb-7037-4de8-be01-1d0600972448",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "21240b5aa4dac8e6748a953890b753d40d49a2ab5912c01ffe9fb59ebb42d5e3"
+  },
+  "id": "srctra0NmWIaWTmQ",
+  "tags": [
+    {
+      "updatedAt": "2026-04-24T10:34:10.454Z",
+      "createdAt": "2026-04-24T10:34:10.454Z",
+      "id": "AdSgZa8mG0PUwsjp",
+      "name": "ATS Optimizer"
+    }
+  ]
+}

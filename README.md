@@ -1,31 +1,47 @@
+
 # 🚀 Automation Workflows Hub (n8n + AI)
 
-A growing collection of automation workflows built using n8n, AI models, and APIs to solve real-world problems.
+A growing collection of real-world automation workflows built using **n8n, AI models, and APIs**.
 
-This repository documents my journey of building practical automation systems — turning ideas into working solutions.
+This repository documents my journey of building systems that **eliminate repetitive work, enhance decision-making, and automate end-to-end processes.**
 
 ---
 
-## 📌 Featured Project
+## 📌 Featured Projects
 
 ### 🧠 Indian Startup Funding Hiring Watchlist
+An automation workflow that tracks startup funding news and predicts which startups are likely to hire soon.
 
-An end-to-end automation workflow that tracks Indian startup funding news and predicts which startups are most likely to start hiring soon.
+### 🤖 ATS Resume Optimizer — AI Job Application Automation
+An end-to-end workflow that automatically generates **ATS-optimized, tailored resumes** for real job listings every day.
 
 ---
 
-## ⚡ What It Does
+## ⚡ What These Workflows Do
 
-- 🔍 Scans 20+ startup and news sources daily  
-- 🤖 Uses AI (LLM) to extract structured funding data  
+### 🧠 Hiring Watchlist
+- 🔍 Scans 20+ startup/news sources daily  
+- 🤖 Extracts structured funding data using AI  
 - 📊 Scores startups based on hiring likelihood  
-- 📄 Stores results in Google Sheets  
-- 📧 Sends a daily email digest of top opportunities  
+- 📄 Stores insights in Google Sheets  
+- 📧 Sends daily email digest  
+
+---
+
+### 🤖 ATS Resume Optimizer
+- 🔍 Scrapes fresh LinkedIn job listings daily (via Apify)  
+- 📄 Fetches base resume from Google Drive  
+- 🤖 Uses AI (Google Gemini) to tailor resumes for each job  
+- 📑 Auto-generates a new resume (Google Docs) per role  
+- 📧 Sends daily email with ready-to-apply resumes + links  
+
+💡 **Result:** Zero manual effort → Just review & apply.
 
 ---
 
 ## 🧩 Workflow Architecture
 
+### 🧠 Hiring Watchlist
 ```
 
 Sources → Fetch → Clean HTML → AI Extraction → Explode Articles
@@ -34,28 +50,49 @@ Sources → Fetch → Clean HTML → AI Extraction → Explode Articles
 
 ```
 
+### 🤖 ATS Resume Optimizer
+```
+
+LinkedIn Jobs → Apify Scraper → Resume Fetch (Drive)
+→ AI Tailoring (Gemini) → Generate Docs
+→ Store Links → Email Digest
+
+```
+
 ---
 
 ## 🛠️ Tech Stack
 
-- n8n (Workflow Automation)  
-- AI / LLM (OpenAI / Gemini)  
-- JavaScript (data transformation)  
-- Google Sheets API  
-- Gmail API  
+- **n8n** (Workflow Automation)  
+- **AI / LLMs** (Google Gemini, OpenAI)  
+- **JavaScript** (data transformation)  
+- **Google Docs API**  
+- **Google Drive API**  
+- **Google Sheets API**  
+- **Gmail API**  
+- **Apify** (Web scraping)  
 
 ---
 
-## 🎯 Use Case
+## 🎯 Use Cases
 
-Startups often expand their teams after raising funds.
-
-This workflow helps:
+### 🧠 Hiring Watchlist
+Helps:
 - Students  
 - Job seekers  
 - Developers  
 
-👉 Identify opportunities *before* they are publicly listed.
+👉 Discover opportunities *before they are publicly visible*
+
+---
+
+### 🤖 ATS Resume Optimizer
+Helps:
+- Job seekers  
+- Developers  
+- Anyone applying to multiple roles  
+
+👉 Apply smarter with **personalized, ATS-friendly resumes at scale**
 
 ---
 
@@ -65,7 +102,8 @@ This workflow helps:
 
 .
 ├── workflows
-│   └── startup-funding-watchlist.json
+│   ├── startup-funding-watchlist.json
+│   └── ats-resume-optimizer.json
 ├── assets
 │   └── screenshots
 └── README.md
@@ -77,48 +115,51 @@ This workflow helps:
 ## ⚙️ Setup Instructions
 
 1. Import the workflow JSON into n8n  
-2. Add required credentials:
+2. Configure credentials:
    - Gmail  
-   - Google Sheets  
+   - Google Drive / Docs / Sheets  
    - LLM (OpenAI / Gemini)  
-3. Replace the Google Sheet ID in the workflow  
-4. Run the workflow manually for testing  
-5. Activate it for daily automation  
+   - Apify API  
+3. Update IDs (Google Docs / Sheets / Drive)  
+4. Run workflow manually for testing  
+5. Enable scheduled triggers  
 
 ---
 
-## 🧪 Example Output
+## 🧪 Example Outputs
 
-Each execution generates structured data like:
-
+### 🧠 Hiring Watchlist
 - Startup Name  
-- Description  
+- Funding Details  
 - Investors  
-- Amount Raised  
-- Founder LinkedIn  
-- Crunchbase Link  
 - Hiring Score (High / Likely / Watchlist)  
 
-Stored in Google Sheets and sent via email.
+---
+
+### 🤖 ATS Resume Optimizer
+- Tailored Resume (Google Docs link)  
+- Job Role & Company  
+- Direct Apply Link  
+- Daily Email Digest  
 
 ---
 
 ## 🚧 Future Plans
 
-- 🔍 Job tracking from startup career pages  
-- 📢 Real-time alerts (Telegram / Slack)  
-- 📊 Analytics dashboards  
-- 🤖 Advanced AI-powered workflows  
-- 🌐 Automations using tools beyond n8n  
+- 🤖 Full job application autopilot (auto-apply workflows)  
+- 📢 Real-time alerts (Telegram / Slack / WhatsApp)  
+- 📊 Dashboards & analytics layer  
+- 🧠 Smarter AI scoring & personalization  
+- 🌐 Multi-platform job scraping (LinkedIn, Indeed, etc.)  
 
 ---
 
 ## 💡 Vision
 
-To build systems that:
-- Reduce manual effort  
-- Provide early insights  
-- Help people stay ahead  
+To build automation systems that:
+- Eliminate repetitive manual work  
+- Provide intelligent insights  
+- Help people **move faster and smarter**
 
 ---
 
@@ -130,11 +171,13 @@ Open to ideas, feedback, and collaboration!
 
 ## 📌 Connect
 
-- LinkedIn: [Aditya Jain](https://www.linkedin.com/in/adddijain/)
-- GitHub: [AdityaJain1106](https://github.com/AdityaJain1106/)
+- LinkedIn: https://www.linkedin.com/in/adddijain/  
+- GitHub: https://github.com/AdityaJain1106  
 
 ---
 
 ## ⭐ Support
 
-If you found this useful, consider starring the repo!
+If you found this useful, consider starring the repo ⭐
+```
+
